@@ -7,7 +7,7 @@ param
     [string]$destination,
     
     [Parameter(Mandatory=$false)]
-    [string]$logFileLocation = $null,
+    [string]$LogFileLocation = $null,
 
     [Parameter(Mandatory=$false)]
     [switch]$NewDestSubDir = $false,
@@ -64,16 +64,16 @@ if ($SameSrcNameDir)
     New-Item -Type Directory -Path $destination
 }
 
-if ($logfileLocation -eq "")
+if ($LogFileLocation -eq "")
 {
-    $logFileLocation = "$($destination)\log_$($timestamp).txt"
+    $LogFileLocation = "$($destination)\log_$($timestamp).txt"
 }
 
-Write-Host $logFileLocation
+Write-Host $LogFileLocation
 
 ## TODO: We need to workaround log file encoding bug in RoboCopy
 
-Write-Host "Start copying $($source) to $($destination) with log file $($logFileLocation)"
+Write-Host "Start copying $($source) to $($destination) with log file $($LogFileLocation)"
 
 Robocopy.exe $source $destination *.* `
     /e `
@@ -91,16 +91,16 @@ Robocopy.exe $source $destination *.* `
     /v `
     /ts `
     /eta `
-    /unilog:"$($logFileLocation)" `
+    /unilog:"$($LogFileLocation)" `
     /tee `
     /unicode
 
 # Re-save Log file to UTF-8
-Write-Debug "Opening $($logFileLocation) for UTF-8 without BOM re-encoding."
-$logFileContent = Get-Content -Path $sourceFile -Encoding unicode
+Write-Debug "Opening $($LogFileLocation) for UTF-8 without BOM re-encoding."
+$logFileContent = Get-Content -Path $LogFileLocation -Encoding unicode
 
-Write-Debug "Saving $($logFileLocation) with UTF-8 (No BOM)"
-$logFileContent | Set-Content -FilePath $sourceFile -Encoding utf8NoBOM
+Write-Debug "Saving $($LogFileLocation) with UTF-8 (No BOM)"
+$logFileContent | Set-Content -Path $LogFileLocation -Encoding utf8NoBOM
 
 if ($OpenDestDirAfterCopy)
 {
