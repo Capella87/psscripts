@@ -95,6 +95,9 @@ Robocopy.exe $source $destination *.* `
     /tee `
     /unicode
 
+$robocopyExitCode = $LASTEXITCODE
+Write-Debug "Robocopy returned exit code $($robocopyExitCode)"
+
 # Re-save Log file to UTF-8
 Write-Debug "Opening $($LogFileLocation) for UTF-8 without BOM re-encoding."
 $logFileContent = Get-Content -Path $LogFileLocation -Encoding unicode
