@@ -25,6 +25,17 @@ param
     [switch]$PreserveDesktopIniFile = $false
 )
 
+function Get-ThreadCountForCopy()
+{
+    $threadCount = (Get-CimInstance -Class Win32_ComputerSystem).NumberOfLogicalProcessors
+
+    if ($threadCount -lt 8)
+    {
+        $threadCount = 8
+    }
+
+    return $threadCount
+}
 
 if ($NewDestSubDir -and $SameSrcNameDir)
 {
@@ -91,7 +102,7 @@ Robocopy.exe $source $destination *.* `
     /dcopy:DATE `
     /a-:R `
     /pf `
-    /mt:8 `
+    /mt:"$(Get-ThreadCountForCopy)" `
     /xa:ST `
     /xd "System Volume Information" `
     /r:1000000 `
