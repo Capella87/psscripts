@@ -16,15 +16,21 @@ param
     [switch]$SameSrcNameDir = $false,
 
     [Parameter(Mandatory=$false)]
-    [switch]$OpenDestDirAfterCopy = $false
+    [switch]$OpenDestDirAfterCopy = $false,
 
-    # [Parameter(Mandatory=$false)]
-    # [switch]$RemoveSrcDirAfterCopy = $false
+    [Parameter(Mandatory=$false)]
+    [switch]$RemoveSrcDirAfterCopy = $false,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$PreserveDesktopIniFile = $false
 )
+
 
 if ($NewDestSubDir -and $SameSrcNameDir)
 {
-    Write-Host "Cannot use both NewDestSubDir and SameSrcNameDir switches."
+    Write-Error -Message "Cannot use both NewDestSubDir and SameSrcNameDir switches." `
+    -Category InvalidOperation `
+    -RecommendedAction "Use either NewDestSubDir or SameSrcNameDir switch."
     exit
 }
 
@@ -32,7 +38,9 @@ $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 
 if (!(Test-Path -Path $source))
 {
-    Write-Host "Source path does not exist."
+    Write-Error -Message "Source path does not exist." `
+    -Category ObjectNotFound `
+    -RecommendedAction "Check the source path."
     exit
 }
 
