@@ -22,7 +22,10 @@ param
     [switch]$RemoveSrcDirAfterCopy = $false,
 
     [Parameter(Mandatory=$false)]
-    [switch]$PreserveDesktopIniFile = $false
+    [switch]$PreserveDesktopIniFile = $false,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$KeepActiveCodePage = $false
 )
 
 function Get-ThreadCountForCopy()
@@ -37,6 +40,33 @@ function Get-ThreadCountForCopy()
     return $threadCount
 }
 
+function Get-ActiveCodePage()
+{
+    if (!((chcp) -match '(?<cp>\d+)'))
+    {
+        Write-Error -Message "Failed to get active code page." `
+        -Category InvalidOperation `
+
+        Write-Warning "Try to change code page to 65001 (UTF-8)"
+        chcp 65001
+
+        return "65001"
+    }
+
+    Write-Debug "Active code page: $($Matches.cp)"
+    return $Matches.cp
+}
+
+if ((Get-ActiveCodePage) -ne "65001")
+{
+    Write-Warning "Your active code page is not UTF-8."
+    
+    if (!$KeepActiveCodePage)
+    {
+        Write-Warning "Changing code page to 65001 (UTF-8)"
+        chcp 65001
+    }
+}
 
 # Check OS of the machine
 if (!$IsWindows)
@@ -143,6 +173,14 @@ $logFileContent = Get-Content -Path $LogFileLocation -Encoding unicode
 
 Write-Debug "Saving $($LogFileLocation) with UTF-8 (No BOM)"
 $logFileContent | Set-Content -Path $LogFileLocation -Encoding utf8NoBOM
+
+if ($robocopyExitCode -ge 8)
+{
+    Write-Error -Message "Robocopy may encountered fatal errors. Please make sure to check log file created. All source files will NOT be deleted." `
+    -Category InvalidOperation `
+    -RecommendedAction "Check the log file on $($destination)"
+    exit
+}
 
 if ($OpenDestDirAfterCopy)
 {
