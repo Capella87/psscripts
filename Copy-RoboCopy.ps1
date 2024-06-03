@@ -37,6 +37,26 @@ function Get-ThreadCountForCopy()
     return $threadCount
 }
 
+
+# Check OS of the machine
+if (!$IsWindows)
+{
+    Write-Error -Message "This script is only supported on Windows because of Robocopy." `
+    -Category InvalidOperation `
+    -RecommendedAction "Run this script on Windows machine."
+    exit
+}
+
+# Check PowerShell version; This script requires PowerShell 5.1 or later
+if ($PSVersionTable.PSVersion.Major -lt 5 -or `
+($PSVersionTable.PSVersion.Major -eq 5 -and $PSVersionTable.PSVersion.Minor -lt 1))
+{
+    Write-Error -Message "This script requires PowerShell version 5.1 or later." `
+    -Category InvalidOperation `
+    -RecommendedAction "Update PowerShell to version 5.1 or later. We recommend to use the latest version of PowerShell."
+    exit
+}
+
 if ($NewDestSubDir -and $SameSrcNameDir)
 {
     Write-Error -Message "Cannot use both NewDestSubDir and SameSrcNameDir switches." `
