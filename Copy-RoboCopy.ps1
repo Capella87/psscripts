@@ -19,7 +19,7 @@ param
     [switch]$OpenDestDirAfterCopy = $false,
 
     [Parameter(Mandatory=$false)]
-    [switch]$RemoveSrcDirAfterCopy = $false,
+    [switch]$Move = $false,
 
     [Parameter(Mandatory=$false)]
     [switch]$PreserveDesktopIniFile = $false,
@@ -158,6 +158,7 @@ Robocopy.exe $source $destination *.* `
     /a-:R `
     /pf `
     /mt:"$(Get-ThreadCountForCopy)" `
+    "$($Move ? '/move' : '')" `
     /xa:ST `
     /xd "System Volume Information" `
     /r:1000000 `
