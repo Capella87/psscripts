@@ -36,6 +36,11 @@ function Get-ThreadCountForCopy()
     {
         $threadCount = 8
     }
+    # source: https://stackoverflow.com/questions/40744335/how-do-i-force-robocopy-to-overwrite-files
+    elseif ($threadCount -gt 64)
+    {
+        $threadCount = 64
+    }
 
     return $threadCount
 }
