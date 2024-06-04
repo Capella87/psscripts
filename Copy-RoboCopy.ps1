@@ -122,7 +122,9 @@ if (!(Test-Path -Path $source))
 
 if (!(Test-Path -Path $destination))
 {
+    Write-Host "Destination path $($destination) does not exist. Creating..."
     New-Item -Type Directory -Path $destination
+    Write-Host "Destination path $($destination) created."
 }
 
 if ($NewDestSubDir)
