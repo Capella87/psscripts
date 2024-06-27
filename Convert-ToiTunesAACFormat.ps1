@@ -102,6 +102,12 @@ for ($i = $Targets.Count - 1; $i -ge 0; $i--)
     }
 }
 
+if ($finalTargets.Count -eq 0)
+{
+    Write-Error "No valid audio files are found. Task is aborted."
+    exit
+}
+
 # Show the number of files to be processed
 Write-Host "The number of files to be processed: $($finalTargets.Count)"
 
@@ -131,7 +137,7 @@ if ($Log)
 
     $LogFileName = Join-Path -Path $OutputDirectory -ChildPath ("qaac_" + $date + ".log")
     $LogOption = "--log `"$LogFileName`""
-    Write-Output "Logfile location: $LogFileName\n"
+    Write-Host "Logfile location: $LogFileName"
     Write-Debug $LogFileName
 }
 
