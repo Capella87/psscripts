@@ -25,6 +25,38 @@ function Find-RecursiveFiles
     return $files
 }
 
+function Check-TargetDirectory
+{
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [string]$Path
+    )
+
+    # Check the directory
+    if (!(Test-Path -Path $Path -PathType Container))
+    {
+        Write-Debug "$Path is invalid path."
+        if (Test-Path -Path (Split-Path -Path $Path -Parent) -PathType Container)
+        {
+            Write-Debug "The parent directory of $Path is valid."
+            Write-Debug "Create $(Split-Path -Path $OutputDirectory -Leaf) under its parent directory."
+            New-Item -Path $OutputDirectory -ItemType Directory
+            Write-Host "The output directory is created at $OutputDirectory"
+        }
+        else
+        {
+            # Throw not found exception
+            Write-Debug "The parent directory of $Path is invalid."
+            Write-Debug "Throw UnauthorizedAccessException."
+            throw [System.Management.Automation.ItemNotFoundException] "The parent directory of $Path is not found."
+        }
+    }
+
+    $rt = Convert-Path -Path $OutputDirectory
+    return $rt
+}
+
 # Find QAAC
 $qaac = (Get-Command -Name qaac -ErrorAction SilentlyContinue).Path
 $qaac64 = (Get-Command -Name qaac64 -ErrorAction SilentlyContinue).Path
@@ -71,14 +103,31 @@ for ($i = $Targets.Count - 1; $i -ge 0; $i--)
 }
 $targetString = $finalTargets -join " "
 
+try
+{
+    $OutputDirectory = (Check-TargetDirectory -Path $OutputDirectory)
+}
+catch [System.UnauthorizedAccessException]
+{
+    Write-Error "Cannot access to the output directory. Check the directory permission."
+    Write-Debug "Cannot access to the directory $OutputDirectory"
+    Write-Debug $_.Exception.StackTrace
+    exit
+}
+catch [System.Management.Automation.ItemNotFoundException]
+{
+    Write-Error "The output directory is invalid. Change the output directory to $pwd"
+    $OutputDirectory = $pwd
+    Write-Debug "The output directory is changed to $OutputDirectory"
+}
+
 if ($Log)
 {
     $date = Get-Date -Format "yyyyMMdd_HHmmss"
 
-    $LogFileBaseDir = Convert-Path -Path $OutputDirectory
-    $LogFileName = Join-Path -Path $LogFileBaseDir -ChildPath ("qaac_" + $date + ".log")
+    $LogFileName = Join-Path -Path $OutputDirectory -ChildPath ("qaac_" + $date + ".log")
     $LogOption = "--log `"$LogFileName`""
-    Write-Output "Logfile location: $LogFileName"
+    Write-Output "Logfile location: $LogFileName\n"
     Write-Debug $LogFileName
 }
 
