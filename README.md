@@ -6,6 +6,7 @@ A collection of convenient PowerShell scripts
 
 ### Batch works
 
+* Convert-ToiTunesAACFormat.ps1 : Convert audio files to iTunes AAC format with QAAC.
 * Copy-RoboCopy.ps1 : Copy directories or files with elegant Robocopy.
 
 ## TODOs
