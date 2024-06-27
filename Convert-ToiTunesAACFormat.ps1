@@ -7,7 +7,10 @@ param
     [string]$OutputDirectory,
 
     [Parameter(Mandatory=$false)]
-    [bool]$CopyAlbumArts = $true
+    [bool]$CopyAlbumArts = $true,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$Log = $false
 )
 
 function Find-RecursiveFiles
@@ -66,12 +69,21 @@ for ($i = $Targets.Count - 1; $i -ge 0; $i--)
         }
     }
 }
-
 $targetString = $finalTargets -join " "
 
-# Execute QAAC with array input and shows processing output to console
-$debugCommand = "$qaac -v256 -q2 --copy-artwork --verbose -d $OutputDirectory $targetString"
-Write-Debug "The final Qaac command is:"
-Write-Debug $debugCommand
-Invoke-Expression $debugCommand
+if ($Log)
+{
+    $date = Get-Date -Format "yyyyMMdd_HHmmss"
 
+    $LogFileBaseDir = Convert-Path -Path $OutputDirectory
+    $LogFileName = Join-Path -Path $LogFileBaseDir -ChildPath ("qaac_" + $date + ".log")
+    $LogOption = "--log `"$LogFileName`""
+    Write-Output "Logfile location: $LogFileName"
+    Write-Debug $LogFileName
+}
+
+# Execute QAAC with array input and shows processing output to console
+$qaacCommand = "$qaac -v256 -q2 --copy-artwork --verbose $LogOption -d $OutputDirectory $targetString"
+Write-Debug "The final Qaac command is:"
+Write-Debug $qaacCommand
+Invoke-Expression $qaacCommand
