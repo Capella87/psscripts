@@ -101,6 +101,10 @@ for ($i = $Targets.Count - 1; $i -ge 0; $i--)
         }
     }
 }
+
+# Show the number of files to be processed
+Write-Host "The number of files to be processed: $($finalTargets.Count)"
+
 $targetString = $finalTargets -join " "
 
 try
