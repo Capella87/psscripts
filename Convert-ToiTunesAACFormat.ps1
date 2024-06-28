@@ -142,7 +142,7 @@ if ($Log)
 }
 
 # Execute QAAC with array input and shows processing output to console
-$qaacCommand = "$qaac -v256 -q2 --copy-artwork --verbose $LogOption -d $OutputDirectory $targetString"
+$qaacCommand = "$qaac -v256 -q2 --copy-artwork --verbose $LogOption -d `"$OutputDirectory`" $targetString"
 Write-Debug "The final Qaac command is:"
 Write-Debug $qaacCommand
 Invoke-Expression $qaacCommand
