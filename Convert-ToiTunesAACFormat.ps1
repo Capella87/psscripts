@@ -48,8 +48,8 @@ function Check-TargetDirectory
         {
             # Throw not found exception
             Write-Debug "The parent directory of $Path is invalid."
-            Write-Debug "Throw UnauthorizedAccessException."
-            throw [System.Management.Automation.ItemNotFoundException] "The parent directory of $Path is not found."
+            Write-Debug "Throw ItemNotFoundException."
+            throw [System.Management.Automation.ItemNotFoundException] "The parent directory of $Path was not found."
         }
     }
 
@@ -78,7 +78,7 @@ for ($i = $Targets.Count - 1; $i -ge 0; $i--)
 {
     if (-not (Test-Path -Path $Targets[$i]))
     {
-        Write-Warning "The target '$($Targets[$i])' is not found. Skip this target."
+        Write-Warning "The target '$($Targets[$i])' was not found. Skip this target."
         continue
     }
     elseif ((Test-Path -Path $Targets[$i] -PathType Container))
@@ -104,7 +104,7 @@ for ($i = $Targets.Count - 1; $i -ge 0; $i--)
 
 if ($finalTargets.Count -eq 0)
 {
-    Write-Error "No valid audio files are found. Task is aborted."
+    Write-Error "No valid audio files were found. Task is aborted."
     exit
 }
 
@@ -128,7 +128,7 @@ catch [System.Management.Automation.ItemNotFoundException]
 {
     Write-Error "The output directory is invalid. Change the output directory to $pwd"
     $OutputDirectory = $pwd
-    Write-Debug "The output directory is changed to $OutputDirectory"
+    Write-Debug "The output directory is now changed to $OutputDirectory"
 }
 
 if ($Log)
