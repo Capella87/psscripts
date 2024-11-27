@@ -91,7 +91,7 @@ for ($i = $Targets.Count - 1; $i -ge 0; $i--)
     }
     elseif ((Test-Path -Path $Targets[$i] -PathType Leaf))
     {
-        if ($Targets[$i].extension -in ".wav", ".flac")
+        if ([System.IO.Path]::GetExtension($Targets[$i]) -in ".wav", ".flac")
         {
             $finalTargets += "`"{0}`"" -f $Targets[$i]
         }
